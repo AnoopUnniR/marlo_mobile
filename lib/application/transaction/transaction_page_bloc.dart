@@ -19,6 +19,7 @@ class TransactionPageBloc
     on<_Started>((event, emit) {
       return emit(state.copyWith(data: event.data));
     });
+    //function to sort according to the search querries
     on<Search>((event, emit) {
       emit(state.copyWith(isLoading: true));
       List<DatumModel> tempList = event.data
@@ -29,12 +30,13 @@ class TransactionPageBloc
       return emit(state.copyWith(
           isLoading: false, data: tempList, filteredList: event.data));
     });
+    //to sort data according to the selected filter 
     on<FilteredResult>((event, emit) {
       List<String> selectedFilters = [];
       emit(state.copyWith(isLoading: true));
       List<DatumModel> data = DatumConverted().datumConverter();
       List<DatumModel> result = [...data];
-      //if the filter is cleared we will show the entire data available
+      //if the filter is cleared we will show the entire data available using this
       if (event.filterMoney == null &&
           event.filterStatuses == null &&
           event.coustomPickedDate == null &&
@@ -42,6 +44,7 @@ class TransactionPageBloc
           event.maximumAmount.isEmpty &&
           event.minimumAmount.isEmpty &&
           event.selectedCurrency.isEmpty) {
+        //updates the filter screen to remove seleted fields
         SelectedFilterResults selectedFilterResults = SelectedFilterResults(
             filteredStatus: event.filterStatuses,
             fiterMoney: event.filterMoney,
@@ -50,7 +53,6 @@ class TransactionPageBloc
             selectedAccount: event.selectedCurrency,
             customPickeddate: event.coustomPickedDate,
             filterTimeRanges: event.filterTimeRanges);
-
         return emit(state.copyWith(
             data: data,
             isLoading: false,
@@ -60,13 +62,36 @@ class TransactionPageBloc
       //sorting according to the money in or out
       if (event.filterMoney != null) {
         selectedFilters.add(event.filterMoney.toString());
+        
         if (event.filterMoney == FilterMoney.moneyIn) {
-          result.removeWhere(
+           result.where(
               (element) => element.data.amount!.split("").first == "-");
         } else if (event.filterMoney == FilterMoney.moneyOut) {
           result.removeWhere(
               (element) => element.data.amount!.split("").first != "-");
         }
+        //----------------------------------------------------------------------
+        /// Use this code instead of the above to get debit or credit according 
+        /// to the status code and not the amount that was received or paid
+        //----------------------------------------------------------------------
+        //  if (event.filterMoney == FilterMoney.moneyIn) {
+        //   result = result
+        //       .where((element) =>
+        //           element.data.sourceType == "DEPOSIT" ||
+        //           element.data.sourceType == "TRANSFER" ||
+        //           element.data.sourceType == "REFUND")
+        //       .toList();
+        // } else if (event.filterMoney == FilterMoney.moneyOut) {
+        //   result = result
+        //       .where((element) =>
+        //           element.data.sourceType == "PAYOUT" ||
+        //           element.data.sourceType == "CHARGE" ||
+        //           element.data.sourceType == "PAYMENT_ATTEMPT"||
+        //           element.data.sourceType == "FEE",
+        //           )
+        //       .toList();
+        // }
+        //----------------------------------------------------------------------
       }
       //sorting according to the status
       if (event.filterStatuses != null) {

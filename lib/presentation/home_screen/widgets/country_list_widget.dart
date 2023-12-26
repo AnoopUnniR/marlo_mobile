@@ -18,9 +18,7 @@ class CountryListWidget extends StatelessWidget {
         itemBuilder: (context, index) {
           CurrencyData currencyData = yourCurrencyList[index];
           return MainHeadCurencyWidgets(
-              image: currencyData.image,
-              amount: currencyData.amount,
-              currencyName: currencyData.name);
+              currencyData: currencyData,);
         },
         separatorBuilder: (context, index) => sbw20,
       ),
@@ -31,14 +29,10 @@ class CountryListWidget extends StatelessWidget {
 class MainHeadCurencyWidgets extends StatelessWidget {
   const MainHeadCurencyWidgets({
     super.key,
-    required this.image,
-    required this.amount,
-    required this.currencyName,
+    required this.currencyData,
   });
-
-  final String image;
-  final String amount;
-  final String currencyName;
+  final CurrencyData currencyData;
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -61,26 +55,26 @@ class MainHeadCurencyWidgets extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               CircleAvatar(
-                backgroundImage: AssetImage(image),
+                backgroundImage: AssetImage(currencyData.image),
                 radius: 30,
               ),
-              Text(
-                "GBP",
-                style: TextStyle(fontSize: 10),
+               Text(
+                currencyData.code,
+                style:const TextStyle(fontSize: 10),
               )
             ],
           ),
           sbh20,
           Text(
-            amount,
-            style: TextStyle(
+            currencyData.amount,
+            style:const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w700,
             ),
           ),
           Text(
-            currencyName,
-            style: TextStyle(color: Colors.black54, fontSize: 12),
+            currencyData.name,
+            style:const TextStyle(color: Colors.black54, fontSize: 12),
           )
         ],
       ),
